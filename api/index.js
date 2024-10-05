@@ -11,14 +11,15 @@ app.use(bodyParser.json());
 
 // MongoDB connection
 const uri = process.env.MONGO_URI;
-//'mongodb+srv://ankit:12ankit3@new.cq1ewgq.mongodb.net/?retryWrites=true&w=majority&appName=new';
 
 mongoose.connect(uri, {
     useNewUrlParser: true,
     useUnifiedTopology: true
-}).then(() => {
+})
+.then(() => {
     console.log('Connected to MongoDB Atlas');
-}).catch((error) => {
+})
+.catch((error) => {
     console.error('Error connecting to MongoDB:', error);
 });
 
@@ -37,15 +38,23 @@ app.get('/', (req, res) => {
 
 // Fetch all items from the database
 app.get('/api/items', async (req, res) => {
+    console.log('Received request for items');
     try {
         const items = await Item.find();
+        console.log('Fetched items:', items);
         res.json(items);
     } catch (error) {
+        console.error('Error fetching items:', error);
         res.status(500).json({ message: 'Error fetching items', error });
     }
 });
 
-// Start the server
-app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
-});
+// Export the app for Vercel
+module.exports = app;
+
+// If running locally, start the server
+if (require.main === module) {
+    app.listen(port, () => {
+        console.log(`Server running on port ${port}`);
+    });
+}
